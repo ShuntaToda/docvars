@@ -29,12 +29,14 @@ md-template-vars <input> <output> [options]
 
 ### Options
 
-| Option      | Default          | Description                                      |
-| ----------- | ---------------- | ------------------------------------------------ |
-| `--vars`    | `variables.yaml` | Path to the variables YAML file                  |
-| `--include` | -                | Glob pattern to include specific files           |
-| `--exclude` | -                | Glob pattern to exclude specific files           |
-| `--watch`   | `false`          | Watch for file changes and rebuild automatically |
+| Option          | Default          | Description                                         |
+| --------------- | ---------------- | --------------------------------------------------- |
+| `--vars`        | `variables.yaml` | Path to the variables YAML file                     |
+| `--include`     | -                | Glob pattern to include specific files              |
+| `--exclude`     | -                | Glob pattern to exclude specific files              |
+| `--watch`       | `false`          | Watch for file changes and rebuild automatically    |
+| `--rename-from` | -                | Variable name to rename from (use with --rename-to) |
+| `--rename-to`   | -                | Variable name to rename to (use with --rename-from) |
 
 ## Examples
 
@@ -71,6 +73,22 @@ This will watch for changes in:
 - The variables YAML file
 
 When changes are detected, templates are automatically rebuilt.
+
+### Rename variables
+
+Rename a variable across all template files and the variables YAML file:
+
+```bash
+# Simple rename
+md-template-vars ./templates ./output --rename-from "name" --rename-to "title"
+
+# Rename nested variable
+md-template-vars ./templates ./output --rename-from "database.host" --rename-to "db.host"
+```
+
+This updates:
+- All `{{oldName}}` occurrences in template files → `{{newName}}`
+- The key in the variables YAML file
 
 ## Template Syntax
 
