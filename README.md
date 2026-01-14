@@ -1,23 +1,25 @@
-# md-template-vars
+# docvars
 
-A CLI tool to replace `{{variables}}` in Markdown templates with values from a YAML file.
+A CLI tool to replace `{{variables}}` in document templates with values from a YAML file.
+
+Supports any text-based files: Markdown, HTML, TXT, and more.
 
 ## Installation
 
 ```bash
-npm install -g md-template-vars
+npm install -g docvars
 ```
 
 Or use with npx:
 
 ```bash
-npx md-template-vars ./templates ./output
+npx docvars ./templates ./output
 ```
 
 ## Usage
 
 ```bash
-md-template-vars <input> <output> [options]
+docvars <input> <output> [options]
 ```
 
 ### Arguments
@@ -45,29 +47,29 @@ md-template-vars <input> <output> [options]
 ### Basic usage
 
 ```bash
-md-template-vars ./templates ./output
+docvars ./templates ./output
 ```
 
 ### Custom variables file
 
 ```bash
-md-template-vars ./templates ./output --vars production.yaml
+docvars ./templates ./output --vars production.yaml
 ```
 
 ### Filter files
 
 ```bash
 # Include only files matching pattern
-md-template-vars ./templates ./output --include "api-*.md"
+docvars ./templates ./output --include "api-*.md"
 
 # Exclude files matching pattern
-md-template-vars ./templates ./output --exclude "draft-*.md"
+docvars ./templates ./output --exclude "draft-*.md"
 ```
 
 ### Watch mode
 
 ```bash
-md-template-vars ./templates ./output --watch
+docvars ./templates ./output --watch
 ```
 
 This will watch for changes in:
@@ -82,10 +84,10 @@ Rename a variable across all template files and the variables YAML file:
 
 ```bash
 # Simple rename
-md-template-vars ./templates ./output --rename-from "name" --rename-to "title"
+docvars ./templates ./output --rename-from "name" --rename-to "title"
 
 # Rename nested variable
-md-template-vars ./templates ./output --rename-from "database.host" --rename-to "db.host"
+docvars ./templates ./output --rename-from "database.host" --rename-to "db.host"
 ```
 
 This updates:
@@ -97,7 +99,7 @@ This updates:
 Show all variables used in templates and their status:
 
 ```bash
-md-template-vars ./templates ./output --list-vars
+docvars ./templates ./output --list-vars
 ```
 
 Output:
@@ -121,7 +123,7 @@ Unused variables (defined but not used):
 Preview what files would be created or updated without actually writing them:
 
 ```bash
-md-template-vars ./templates ./output --dry-run
+docvars ./templates ./output --dry-run
 ```
 
 Output:
@@ -144,7 +146,7 @@ Summary: 1 create, 2 update, 1 unchanged
 
 ## Template Syntax
 
-Use `{{variableName}}` syntax in your Markdown files:
+Use `{{variableName}}` syntax in your template files:
 
 **Template (templates/hello.md):**
 ```markdown

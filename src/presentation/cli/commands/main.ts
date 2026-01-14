@@ -97,8 +97,8 @@ function startWatch(options: ProcessOptions): void {
 
 export const mainCommand = defineCommand({
   meta: {
-    name: "md-template-vars",
-    description: "Replace {{variables}} in markdown templates with YAML values",
+    name: "docvars",
+    description: "Replace {{variables}} in document templates with YAML values",
   },
   args: {
     input: {
