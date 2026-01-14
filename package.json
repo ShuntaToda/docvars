@@ -35,8 +35,11 @@
     "node": ">=18"
   },
   "dependencies": {
+    "chokidar": "^5.0.0",
     "citty": "^0.1.6",
+    "cli-table3": "^0.6.5",
     "fast-glob": "^3.3.2",
+    "picocolors": "^1.1.1",
     "yaml": "^2.3.4",
     "zod": "^3.22.4"
   },

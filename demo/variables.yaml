@@ -1,14 +1,12 @@
 app:
   name: My Awesome App
   description: これはテンプレート変数のデモです
-
 database:
-  host: localhost
   port: 5432
   name: myapp_db
-
 api:
   url: https://api.example.com
   version: v1
-
 author: 開発チーム
+db:
+  host: localhost

@@ -38,6 +38,7 @@ md-template-vars <input> <output> [options]
 | `--rename-from` | -                | Variable name to rename from (use with --rename-to) |
 | `--rename-to`   | -                | Variable name to rename to (use with --rename-from) |
 | `--list-vars`   | `false`          | List all variables used in templates                |
+| `--dry-run`     | `false`          | Preview changes without writing files               |
 
 ## Examples
 
@@ -113,6 +114,32 @@ Variables used in templates:
 Unused variables (defined but not used):
 
   deprecated.setting
+```
+
+### Dry run
+
+Preview what files would be created or updated without actually writing them:
+
+```bash
+md-template-vars ./templates ./output --dry-run
+```
+
+Output:
+
+```
+Dry run - no files written
+
+Files to create (1):
+  + config.md
+
+Files to update (2):
+  ~ README.md
+  ~ api.md
+
+Files unchanged (1):
+  = changelog.md
+
+Summary: 1 create, 2 update, 1 unchanged
 ```
 
 ## Template Syntax

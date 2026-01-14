@@ -1,9 +1,12 @@
 import { defineCommand } from "citty";
-import { watch } from "node:fs";
 import { resolve } from "node:path";
+import pc from "picocolors";
+import Table from "cli-table3";
+import { watch } from "chokidar";
 import { processTemplates } from "../../../application/use-cases/process-templates.js";
 import { renameVariable } from "../../../application/use-cases/rename-variable.js";
 import { listVariables } from "../../../application/use-cases/list-variables.js";
+import { dryRun } from "../../../application/use-cases/dry-run.js";
 import { VariablesFileNotFoundError, SameInputOutputError, InvalidVariablesError } from "../../../shared/errors.js";
 
 interface ProcessOptions {
@@ -18,14 +21,32 @@ async function runProcess(options: ProcessOptions): Promise<boolean> {
   try {
     const result = await processTemplates(options);
 
-    for (const warning of result.warnings) {
-      console.warn(warning);
+    if (result.warnings.length > 0) {
+      for (const warning of result.warnings) {
+        console.warn(pc.yellow(`⚠ ${warning}`));
+      }
+      console.log();
     }
 
-    console.log(`Processed ${result.processedFiles.length} file(s)`);
-    for (const file of result.processedFiles) {
-      console.log(`  - ${file}`);
+    if (result.processedFiles.length === 0) {
+      console.log(pc.gray("No files to process"));
+      return true;
     }
+
+    const table = new Table({
+      head: [pc.bold("File"), pc.bold("Status")],
+      style: { head: [], border: [] },
+    });
+
+    for (const file of result.processedFiles) {
+      table.push([file, pc.green("✓ done")]);
+    }
+
+    console.log(pc.bold(pc.cyan("\n✨ Build complete\n")));
+    console.log(table.toString());
+    console.log();
+    console.log(pc.bold("Processed: ") + pc.green(`${result.processedFiles.length} file(s)`));
+
     return true;
   } catch (error) {
     if (
@@ -33,7 +54,7 @@ async function runProcess(options: ProcessOptions): Promise<boolean> {
       error instanceof SameInputOutputError ||
       error instanceof InvalidVariablesError
     ) {
-      console.error(`Error: ${error.message}`);
+      console.error(pc.red(`✗ Error: ${error.message}`));
       return false;
     }
     throw error;
@@ -46,22 +67,32 @@ function startWatch(options: ProcessOptions): void {
 
   let debounceTimer: NodeJS.Timeout | null = null;
 
-  const handleChange = () => {
+  const handleChange = (eventType: string, filePath: string) => {
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
     debounceTimer = setTimeout(async () => {
-      console.log("\n--- Change detected, rebuilding... ---\n");
+      console.log(pc.cyan(`\n👀 Change detected: ${pc.bold(filePath)} (${eventType})\n`));
       await runProcess(options);
     }, 100);
   };
 
-  console.log(`\nWatching for changes...`);
-  console.log(`  - Templates: ${inputPath}`);
-  console.log(`  - Variables: ${varsPath}\n`);
+  console.log(pc.bold(pc.magenta("\n👁 Watch mode enabled\n")));
 
-  watch(inputPath, { recursive: true }, handleChange);
-  watch(varsPath, handleChange);
+  const watchTable = new Table({
+    style: { head: [], border: [] },
+  });
+  watchTable.push([pc.gray("Templates"), inputPath], [pc.gray("Variables"), varsPath]);
+  console.log(watchTable.toString());
+  console.log();
+  console.log(pc.gray("Waiting for changes... (Ctrl+C to stop)\n"));
+
+  const watcher = watch([inputPath, varsPath], {
+    ignoreInitial: true,
+    ignored: /(^|[\/\\])\../,
+  });
+
+  watcher.on("all", handleChange);
 }
 
 export const mainCommand = defineCommand({
@@ -111,8 +142,88 @@ export const mainCommand = defineCommand({
       description: "List all variables used in templates",
       default: false,
     },
+    "dry-run": {
+      type: "boolean",
+      description: "Preview changes without writing files",
+      default: false,
+    },
   },
   async run({ args }) {
+    // Handle dry-run mode
+    if (args["dry-run"]) {
+      try {
+        const result = await dryRun({
+          input: args.input,
+          output: args.output,
+          vars: args.vars,
+          include: args.include,
+          exclude: args.exclude,
+        });
+
+        console.log(pc.bold(pc.cyan("\n🔍 Dry run - no files written\n")));
+
+        if (result.warnings.length > 0) {
+          for (const warning of result.warnings) {
+            console.warn(pc.yellow(`⚠ ${warning}`));
+          }
+          console.log();
+        }
+
+        if (result.changes.length === 0) {
+          console.log(pc.gray("No files to process"));
+          return;
+        }
+
+        const table = new Table({
+          head: [pc.bold("File"), pc.bold("Status")],
+          style: { head: [], border: [] },
+        });
+
+        for (const change of result.changes) {
+          let status: string;
+          switch (change.status) {
+            case "create":
+              status = pc.green("+ create");
+              break;
+            case "update":
+              status = pc.yellow("~ update");
+              break;
+            case "unchanged":
+              status = pc.gray("= unchanged");
+              break;
+          }
+          table.push([change.relativePath, status]);
+        }
+
+        console.log(table.toString());
+        console.log();
+
+        const creates = result.changes.filter((c) => c.status === "create").length;
+        const updates = result.changes.filter((c) => c.status === "update").length;
+        const unchanged = result.changes.filter((c) => c.status === "unchanged").length;
+
+        console.log(
+          pc.bold("Summary: ") +
+            pc.green(`${creates} create`) +
+            pc.gray(" · ") +
+            pc.yellow(`${updates} update`) +
+            pc.gray(" · ") +
+            pc.gray(`${unchanged} unchanged`)
+        );
+      } catch (error) {
+        if (
+          error instanceof VariablesFileNotFoundError ||
+          error instanceof SameInputOutputError ||
+          error instanceof InvalidVariablesError
+        ) {
+          console.error(`Error: ${error.message}`);
+          process.exit(1);
+        }
+        throw error;
+      }
+      return;
+    }
+
     // Handle list-vars mode
     if (args["list-vars"]) {
       try {
@@ -123,31 +234,50 @@ export const mainCommand = defineCommand({
           exclude: args.exclude,
         });
 
+        console.log(pc.bold(pc.cyan("\n📋 Variables\n")));
+
         if (result.variables.length === 0 && result.unusedVariables.length === 0) {
-          console.log("No variables found");
+          console.log(pc.gray("No variables found"));
           return;
         }
 
         if (result.variables.length > 0) {
-          console.log("Variables used in templates:\n");
+          const table = new Table({
+            head: [pc.bold("Variable"), pc.bold("Status"), pc.bold("Used in")],
+            style: { head: [], border: [] },
+            wordWrap: true,
+          });
+
           for (const v of result.variables) {
-            const status = v.isDefined ? "✓" : "✗ undefined";
-            console.log(`  ${v.name} (${status})`);
-            for (const file of v.files) {
-              console.log(`    → ${file}`);
-            }
+            const status = v.isDefined ? pc.green("✓ defined") : pc.red("✗ undefined");
+            const files = v.files.map((f) => pc.gray(f)).join("\n");
+            table.push([v.name, status, files]);
           }
+
+          console.log(table.toString());
         }
 
         if (result.unusedVariables.length > 0) {
-          console.log("\nUnused variables (defined but not used):\n");
+          console.log(pc.bold(pc.yellow("\n⚠ Unused variables (defined but not used):\n")));
           for (const name of result.unusedVariables) {
-            console.log(`  ${name}`);
+            console.log(pc.gray(`  ${name}`));
           }
         }
+
+        console.log();
+        const defined = result.variables.filter((v) => v.isDefined).length;
+        const undefined_ = result.variables.filter((v) => !v.isDefined).length;
+        console.log(
+          pc.bold("Summary: ") +
+            pc.green(`${defined} defined`) +
+            pc.gray(" · ") +
+            (undefined_ > 0 ? pc.red(`${undefined_} undefined`) : pc.gray("0 undefined")) +
+            pc.gray(" · ") +
+            pc.yellow(`${result.unusedVariables.length} unused`)
+        );
       } catch (error) {
         if (error instanceof VariablesFileNotFoundError) {
-          console.error(`Error: ${error.message}`);
+          console.error(pc.red(`✗ Error: ${error.message}`));
           process.exit(1);
         }
         throw error;
@@ -158,7 +288,7 @@ export const mainCommand = defineCommand({
     // Handle rename mode
     if (args["rename-from"] || args["rename-to"]) {
       if (!args["rename-from"] || !args["rename-to"]) {
-        console.error("Error: Both --rename-from and --rename-to are required");
+        console.error(pc.red("✗ Error: Both --rename-from and --rename-to are required"));
         process.exit(1);
       }
 
@@ -173,19 +303,37 @@ export const mainCommand = defineCommand({
         });
 
         if (result.renamedInFiles.length === 0 && !result.renamedInVars) {
-          console.log(`No occurrences of "${args["rename-from"]}" found`);
+          console.log(pc.yellow(`⚠ No occurrences of "${args["rename-from"]}" found`));
         } else {
-          console.log(`Renamed "${args["rename-from"]}" → "${args["rename-to"]}"`);
+          console.log(
+            pc.bold(pc.cyan("\n✏️  Rename complete\n")) +
+              pc.gray(`   ${args["rename-from"]}`) +
+              pc.cyan(" → ") +
+              pc.green(args["rename-to"]) +
+              "\n"
+          );
+
+          const table = new Table({
+            head: [pc.bold("File"), pc.bold("Status")],
+            style: { head: [], border: [] },
+          });
+
           if (result.renamedInVars) {
-            console.log(`  - Updated variables file`);
+            table.push([pc.italic("variables.yaml"), pc.green("✓ updated")]);
           }
           for (const file of result.renamedInFiles) {
-            console.log(`  - ${file}`);
+            table.push([file, pc.green("✓ updated")]);
           }
+
+          console.log(table.toString());
+          console.log();
+
+          const total = result.renamedInFiles.length + (result.renamedInVars ? 1 : 0);
+          console.log(pc.bold("Updated: ") + pc.green(`${total} file(s)`));
         }
       } catch (error) {
         if (error instanceof VariablesFileNotFoundError) {
-          console.error(`Error: ${error.message}`);
+          console.error(pc.red(`✗ Error: ${error.message}`));
           process.exit(1);
         }
         throw error;
