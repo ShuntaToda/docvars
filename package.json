@@ -1,7 +1,7 @@
 {
   "name": "md-template-vars",
   "author": "Shunta Toda",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Replace {{variables}} in markdown templates with YAML values",
   "type": "module",
   "main": "./dist/application/use-cases/process-templates.js",
