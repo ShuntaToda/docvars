@@ -3,6 +3,11 @@ import { resolve } from "node:path";
 import pc from "picocolors";
 import Table from "cli-table3";
 import { watch } from "chokidar";
+
+function truncate(str: string, maxLength: number): string {
+  if (str.length <= maxLength) return str;
+  return str.slice(0, maxLength - 1) + "…";
+}
 import { processTemplates } from "../../../application/use-cases/process-templates.js";
 import { renameVariable } from "../../../application/use-cases/rename-variable.js";
 import { listVariables } from "../../../application/use-cases/list-variables.js";
@@ -251,15 +256,16 @@ export const mainCommand = defineCommand({
 
         if (result.variables.length > 0) {
           const table = new Table({
-            head: [pc.bold("Variable"), pc.bold("Status"), pc.bold("Used in")],
+            head: [pc.bold("Variable"), pc.bold("Value"), pc.bold("Used in")],
             style: { head: [], border: [] },
             wordWrap: true,
+            colWidths: [null, 30, null],
           });
 
           for (const v of result.variables) {
-            const status = v.isDefined ? pc.green("✓ defined") : pc.red("✗ undefined");
+            const value = v.isDefined ? pc.green(truncate(v.value || "", 25)) : pc.red("✗ undefined");
             const files = v.files.map((f) => pc.gray(f)).join("\n");
-            table.push([v.name, status, files]);
+            table.push([v.name, value, files]);
           }
 
           console.log(table.toString());
@@ -267,9 +273,18 @@ export const mainCommand = defineCommand({
 
         if (result.unusedVariables.length > 0) {
           console.log(pc.bold(pc.yellow("\n⚠ Unused variables (defined but not used):\n")));
-          for (const name of result.unusedVariables) {
-            console.log(pc.gray(`  ${name}`));
+
+          const unusedTable = new Table({
+            head: [pc.bold("Variable"), pc.bold("Value")],
+            style: { head: [], border: [] },
+            colWidths: [null, 40],
+          });
+
+          for (const v of result.unusedVariables) {
+            unusedTable.push([pc.gray(v.name), pc.gray(truncate(v.value, 35))]);
           }
+
+          console.log(unusedTable.toString());
         }
 
         console.log();

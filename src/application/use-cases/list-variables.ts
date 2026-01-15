@@ -13,13 +13,19 @@ export interface ListVariablesOptions {
 
 export interface VariableUsage {
   name: string;
+  value?: string;
   files: string[];
   isDefined: boolean;
 }
 
+export interface UnusedVariable {
+  name: string;
+  value: string;
+}
+
 export interface ListVariablesResult {
   variables: VariableUsage[];
-  unusedVariables: string[];
+  unusedVariables: UnusedVariable[];
 }
 
 const VARIABLE_PATTERN = /\{\{([\w.]+)\}\}/g;
@@ -61,6 +67,7 @@ export async function listVariables(options: ListVariablesOptions): Promise<List
   for (const [name, files] of variableUsageMap) {
     variables.push({
       name,
+      value: definedVars[name],
       files: Array.from(files).sort(),
       isDefined: definedVarNames.has(name),
     });
@@ -72,7 +79,8 @@ export async function listVariables(options: ListVariablesOptions): Promise<List
   // Find unused variables (defined but not used)
   const unusedVariables = Array.from(definedVarNames)
     .filter((name) => !usedVarNames.has(name))
-    .sort();
+    .sort()
+    .map((name) => ({ name, value: definedVars[name] }));
 
   return { variables, unusedVariables };
 }
