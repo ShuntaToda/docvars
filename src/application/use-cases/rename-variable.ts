@@ -35,7 +35,8 @@ export async function renameVariable(options: RenameOptions): Promise<RenameResu
 
   // Rename in template files
   const templateFiles = await scanTemplates(input, { only, exclude });
-  const pattern = new RegExp(`\\{\\{${escapeRegex(from)}(\\}\\}|\\|)`, "g");
+  // Match exact variable or prefix (e.g., "database" matches "{{database}}" and "{{database.host}}")
+  const pattern = new RegExp(`\\{\\{${escapeRegex(from)}(\\.|\\}\\}|\\|)`, "g");
 
   for (const file of templateFiles) {
     const content = readFileSync(file, "utf-8");

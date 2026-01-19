@@ -115,22 +115,29 @@ docvars ./templates ./output --rename-from "name" --rename-to "title"
 
 # Rename nested variable
 docvars ./templates ./output --rename-from "database.host" --rename-to "db.host"
+
+# Prefix rename - renames all variables with matching prefix
+# {{database}} → {{db}}
+# {{database.host}} → {{db.host}}
+# {{database.port}} → {{db.port}}
+docvars ./templates ./output --rename-from "database" --rename-to "db"
 ```
 
 Output:
 
 ```
 ✏️  Rename complete
-   database.host → db.host
+   database → db
 
 ┌────────────────┬───────────┐
 │ File           │ Status    │
 ├────────────────┼───────────┤
 │ variables.yaml │ ✓ updated │
 │ README.md      │ ✓ updated │
+│ config.md      │ ✓ updated │
 └────────────────┴───────────┘
 
-Updated: 2 file(s)
+Updated: 3 file(s)
 ```
 
 ### List variables
