@@ -237,6 +237,36 @@ database:
 Database: localhost:5432
 ```
 
+### Array Variables
+
+You can use arrays in your variables file and access them with index notation:
+
+**Template:**
+```markdown
+## Features
+
+1. {{features.0}}
+2. {{features.1}}
+3. {{features.2}}
+```
+
+**Variables (variables.yaml):**
+```yaml
+features:
+  - User authentication
+  - Data analytics
+  - API integration
+```
+
+**Output:**
+```markdown
+## Features
+
+1. User authentication
+2. Data analytics
+3. API integration
+```
+
 ## Error Handling
 
 | Case                        | Behavior                                            |
