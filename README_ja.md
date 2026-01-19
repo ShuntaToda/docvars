@@ -2,77 +2,75 @@
 
 ![docvars logo](./logo.jpeg)
 
-[日本語版 README はこちら](./README_ja.md)
+ドキュメントテンプレート内の `{{variables}}` を YAML ファイルの値で置換する CLI ツールです。
 
-A CLI tool to replace `{{variables}}` in document templates with values from a YAML file.
+Markdown、HTML、TXT など、あらゆるテキストベースのファイルに対応しています。
 
-Supports any text-based files: Markdown, HTML, TXT, and more.
-
-## Usage
+## 使い方
 
 ```bash
 npx docvars <input> <output> [options]
 ```
 
-### Arguments
+### 引数
 
-| Argument | Description                               |
-| -------- | ----------------------------------------- |
-| `input`  | Input directory containing template files |
-| `output` | Output directory for processed files      |
+| 引数     | 説明                               |
+| -------- | ---------------------------------- |
+| `input`  | テンプレートファイルを含む入力ディレクトリ |
+| `output` | 処理済みファイルの出力ディレクトリ       |
 
-### Options
+### オプション
 
-| Option          | Alias | Default          | Description                                         |
-| --------------- | ----- | ---------------- | --------------------------------------------------- |
-| `--vars`        | `-v`  | `variables.yaml` | Path to the variables YAML file                     |
-| `--only`        | `-o`  | `**/*`           | Glob pattern to filter files (e.g. **/*.md)         |
-| `--exclude`     | `-e`  | -                | Glob pattern to exclude specific files              |
-| `--watch`       | `-w`  | `false`          | Watch for file changes and rebuild automatically    |
-| `--rename-from` | `-F`  | -                | Variable name to rename from (use with --rename-to) |
-| `--rename-to`   | `-T`  | -                | Variable name to rename to (use with --rename-from) |
-| `--list-vars`   | `-l`  | `false`          | List all variables used in templates                |
-| `--dry-run`     | `-d`  | `false`          | Preview changes without writing files               |
+| オプション      | 短縮形 | デフォルト       | 説明                                           |
+| --------------- | ------ | ---------------- | ---------------------------------------------- |
+| `--vars`        | `-v`   | `variables.yaml` | 変数 YAML ファイルのパス                       |
+| `--only`        | `-o`   | `**/*`           | ファイルをフィルタする glob パターン           |
+| `--exclude`     | `-e`   | -                | 除外するファイルの glob パターン               |
+| `--watch`       | `-w`   | `false`          | ファイル変更を監視して自動で再ビルド           |
+| `--rename-from` | `-F`   | -                | リネーム元の変数名 (--rename-to と併用)        |
+| `--rename-to`   | `-T`   | -                | リネーム先の変数名 (--rename-from と併用)      |
+| `--list-vars`   | `-l`   | `false`          | テンプレートで使用されている全変数を一覧表示   |
+| `--dry-run`     | `-d`   | `false`          | ファイルを書き込まずに変更をプレビュー         |
 
-## Examples
+## 使用例
 
-### Basic usage
+### 基本的な使い方
 
 ```bash
 npx docvars ./templates ./output
 ```
 
-### Custom variables file
+### カスタム変数ファイル
 
 ```bash
 npx docvars ./templates ./output --vars production.yaml
 ```
 
-### Filter files
+### ファイルのフィルタリング
 
 ```bash
-# Process only markdown files
+# Markdown ファイルのみ処理
 npx docvars ./templates ./output --only "**/*.md"
 
-# Process multiple file types
+# 複数のファイルタイプを処理
 npx docvars ./templates ./output --only "**/*.{md,html,txt}"
 
-# Process only files matching pattern
+# パターンに一致するファイルのみ処理
 npx docvars ./templates ./output --only "api-*.md"
 
-# Exclude files matching pattern
+# パターンに一致するファイルを除外
 npx docvars ./templates ./output --exclude "draft-*.md"
 ```
 
-By default, all text files are processed (binary files like images are automatically excluded).
+デフォルトでは全てのテキストファイルが処理されます（画像などのバイナリファイルは自動的に除外されます）。
 
-### Watch mode
+### 監視モード
 
 ```bash
 npx docvars ./templates ./output --watch
 ```
 
-Output:
+出力:
 
 ```
 👁 Watch mode enabled
@@ -97,25 +95,25 @@ Waiting for changes... (Ctrl+C to stop)
 Processed: 1 file(s)
 ```
 
-### Rename variables
+### 変数のリネーム
 
-Rename a variable across all template files and the variables YAML file:
+テンプレートファイルと変数 YAML ファイル全体で変数名をリネームします:
 
 ```bash
-# Simple rename
+# 単純なリネーム
 npx docvars ./templates ./output --rename-from "name" --rename-to "title"
 
-# Rename nested variable
+# ネストした変数のリネーム
 npx docvars ./templates ./output --rename-from "database.host" --rename-to "db.host"
 
-# Prefix rename - renames all variables with matching prefix
+# プレフィックスリネーム - 一致するプレフィックスを持つ全ての変数をリネーム
 # {{database}} → {{db}}
 # {{database.host}} → {{db.host}}
 # {{database.port}} → {{db.port}}
 npx docvars ./templates ./output --rename-from "database" --rename-to "db"
 ```
 
-Output:
+出力:
 
 ```
 ✏️  Rename complete
@@ -132,15 +130,15 @@ Output:
 Updated: 3 file(s)
 ```
 
-### List variables
+### 変数の一覧表示
 
-Show all variables used in templates and their status:
+テンプレートで使用されている全ての変数とその状態を表示します:
 
 ```bash
 npx docvars ./templates ./output --list-vars
 ```
 
-Output:
+出力:
 
 ```
 📋 Variables
@@ -159,15 +157,15 @@ Output:
 Summary: 1 defined · 1 undefined · 1 unused
 ```
 
-### Dry run
+### ドライラン
 
-Preview what files would be created or updated without actually writing them:
+実際にファイルを書き込まずに、作成・更新されるファイルをプレビューします:
 
 ```bash
 npx docvars ./templates ./output --dry-run
 ```
 
-Output:
+出力:
 
 ```
 🔍 Dry run - no files written
@@ -184,42 +182,42 @@ Output:
 Summary: 1 create · 2 update · 1 unchanged
 ```
 
-## Template Syntax
+## テンプレート構文
 
-Use `{{variableName}}` syntax in your template files:
+テンプレートファイルでは `{{variableName}}` 構文を使用します:
 
-**Template (templates/hello.md):**
+**テンプレート (templates/hello.md):**
 ```markdown
 # Hello {{name}}
 
 Welcome to {{project}}!
 ```
 
-**Variables (variables.yaml):**
+**変数ファイル (variables.yaml):**
 ```yaml
 name: World
 project: My Project
 ```
 
-**Output (output/hello.md):**
+**出力 (output/hello.md):**
 ```markdown
 # Hello World
 
 Welcome to My Project!
 ```
 
-### Nested Variables
+### ネストした変数
 
-You can use nested objects in your variables file and access them with dot notation:
+変数ファイルでネストしたオブジェクトを使用し、ドット記法でアクセスできます:
 
-**Template:**
+**テンプレート:**
 ```markdown
 # {{app.name}}
 
 Database: {{database.host}}:{{database.port}}
 ```
 
-**Variables (variables.yaml):**
+**変数ファイル (variables.yaml):**
 ```yaml
 app:
   name: My App
@@ -229,18 +227,18 @@ database:
   port: 5432
 ```
 
-**Output:**
+**出力:**
 ```markdown
 # My App
 
 Database: localhost:5432
 ```
 
-### Array Variables
+### 配列変数
 
-You can use arrays in your variables file and access them with index notation:
+変数ファイルで配列を使用し、インデックス記法でアクセスできます:
 
-**Template:**
+**テンプレート:**
 ```markdown
 ## Features
 
@@ -249,7 +247,7 @@ You can use arrays in your variables file and access them with index notation:
 3. {{features.2}}
 ```
 
-**Variables (variables.yaml):**
+**変数ファイル (variables.yaml):**
 ```yaml
 features:
   - User authentication
@@ -257,7 +255,7 @@ features:
   - API integration
 ```
 
-**Output:**
+**出力:**
 ```markdown
 ## Features
 
@@ -266,14 +264,14 @@ features:
 3. API integration
 ```
 
-## Error Handling
+## エラーハンドリング
 
-| Case                        | Behavior                                            |
-| --------------------------- | --------------------------------------------------- |
-| Undefined variable          | Warning is displayed, variable syntax is kept as-is |
-| Same input/output directory | Error and exit                                      |
-| Variables file not found    | Error and exit                                      |
+| ケース                     | 動作                                           |
+| -------------------------- | ---------------------------------------------- |
+| 未定義の変数               | 警告を表示し、変数構文はそのまま維持           |
+| 入力と出力が同じディレクトリ | エラーで終了                                   |
+| 変数ファイルが見つからない | エラーで終了                                   |
 
-## License
+## ライセンス
 
 MIT
