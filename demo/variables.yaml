@@ -1,6 +1,6 @@
 app:
-  name: My Awesome App
   description: これはテンプレート変数のデモです
+  name: My Awesome App
 database:
   port: 5432
   name: myapp_db

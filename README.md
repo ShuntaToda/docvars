@@ -37,8 +37,8 @@ docvars <input> <output> [options]
 | `--only`        | `-o`  | `**/*`           | Glob pattern to filter files (e.g. **/*.md)         |
 | `--exclude`     | `-e`  | -                | Glob pattern to exclude specific files              |
 | `--watch`       | `-w`  | `false`          | Watch for file changes and rebuild automatically    |
-| `--rename-from` | `-r`  | -                | Variable name to rename from (use with --rename-to) |
-| `--rename-to`   | `-t`  | -                | Variable name to rename to (use with --rename-from) |
+| `--rename-from` | `-F`  | -                | Variable name to rename from (use with --rename-to) |
+| `--rename-to`   | `-T`  | -                | Variable name to rename to (use with --rename-from) |
 | `--list-vars`   | `-l`  | `false`          | List all variables used in templates                |
 | `--dry-run`     | `-d`  | `false`          | Preview changes without writing files               |
 

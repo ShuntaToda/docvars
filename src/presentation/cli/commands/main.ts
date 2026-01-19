@@ -140,12 +140,12 @@ export const mainCommand = defineCommand({
     },
     "rename-from": {
       type: "string",
-      alias: "r",
+      alias: "F",
       description: "Variable name to rename from (use with --rename-to)",
     },
     "rename-to": {
       type: "string",
-      alias: "t",
+      alias: "T",
       description: "Variable name to rename to (use with --rename-from)",
     },
     "list-vars": {
