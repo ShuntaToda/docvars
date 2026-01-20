@@ -1,7 +1,7 @@
 {
   "name": "docvars",
   "author": "Shunta Toda",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Replace {{variables}} in document templates with YAML values",
   "type": "module",
   "main": "./dist/application/use-cases/process-templates.js",
