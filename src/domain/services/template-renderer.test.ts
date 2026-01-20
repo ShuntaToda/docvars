@@ -71,4 +71,34 @@ describe("renderTemplate", () => {
     expect(result.content).toBe("Hello {{name}}!");
     expect(result.undefinedVariables).toEqual(["name"]);
   });
+
+  it("should replace nested variables with dot notation", () => {
+    const content = "Database: {{database.host}}:{{database.port}}";
+    const variables = { "database.host": "localhost", "database.port": "5432" };
+
+    const result = renderTemplate(content, variables);
+
+    expect(result.content).toBe("Database: localhost:5432");
+    expect(result.undefinedVariables).toEqual([]);
+  });
+
+  it("should handle deeply nested variables", () => {
+    const content = "API URL: {{app.api.url}}";
+    const variables = { "app.api.url": "https://api.example.com" };
+
+    const result = renderTemplate(content, variables);
+
+    expect(result.content).toBe("API URL: https://api.example.com");
+    expect(result.undefinedVariables).toEqual([]);
+  });
+
+  it("should report undefined nested variables", () => {
+    const content = "{{db.host}} and {{db.port}}";
+    const variables = { "db.host": "localhost" };
+
+    const result = renderTemplate(content, variables);
+
+    expect(result.content).toBe("localhost and {{db.port}}");
+    expect(result.undefinedVariables).toEqual(["db.port"]);
+  });
 });

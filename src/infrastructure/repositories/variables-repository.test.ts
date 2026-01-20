@@ -25,16 +25,31 @@ describe("loadVariables", () => {
   });
 
   it("should throw VariablesFileNotFoundError when file does not exist", () => {
-    expect(() => loadVariables("nonexistent.yaml")).toThrow(
-      VariablesFileNotFoundError
-    );
+    expect(() => loadVariables("nonexistent.yaml")).toThrow(VariablesFileNotFoundError);
   });
 
-  it("should throw InvalidVariablesError for invalid YAML structure", () => {
-    const filePath = join(TEST_DIR, "invalid.yaml");
-    writeFileSync(filePath, "name:\n  nested: value");
+  it("should load nested YAML variables and flatten them", () => {
+    const filePath = join(TEST_DIR, "nested.yaml");
+    writeFileSync(filePath, "database:\n  host: localhost\n  port: 5432");
 
-    expect(() => loadVariables(filePath)).toThrow(InvalidVariablesError);
+    const result = loadVariables(filePath);
+
+    expect(result).toEqual({
+      "database.host": "localhost",
+      "database.port": "5432",
+    });
+  });
+
+  it("should load deeply nested YAML variables", () => {
+    const filePath = join(TEST_DIR, "deep.yaml");
+    writeFileSync(filePath, "app:\n  database:\n    host: localhost\nname: test");
+
+    const result = loadVariables(filePath);
+
+    expect(result).toEqual({
+      "app.database.host": "localhost",
+      name: "test",
+    });
   });
 
   it("should handle empty YAML file", () => {

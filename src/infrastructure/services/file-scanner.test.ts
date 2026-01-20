@@ -19,51 +19,38 @@ describe("scanTemplates", () => {
     rmSync(TEST_DIR, { recursive: true, force: true });
   });
 
-  it("should find all markdown files by default", async () => {
+  it("should find all files by default", async () => {
     const files = await scanTemplates(TEST_DIR);
 
-    expect(files).toHaveLength(4);
-    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(
-      `${TEST_DIR}/file1.md`
-    );
-    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(
-      `${TEST_DIR}/nested/file3.md`
-    );
+    expect(files).toHaveLength(5);
+    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(`${TEST_DIR}/file1.md`);
+    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(`${TEST_DIR}/nested/file3.md`);
+    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(`${TEST_DIR}/readme.txt`);
   });
 
-  it("should filter by include pattern", async () => {
-    const files = await scanTemplates(TEST_DIR, { include: "file*.md" });
+  it("should filter by only pattern", async () => {
+    const files = await scanTemplates(TEST_DIR, { only: "file*.md" });
 
     expect(files).toHaveLength(2);
-    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(
-      `${TEST_DIR}/file1.md`
-    );
-    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(
-      `${TEST_DIR}/file2.md`
-    );
+    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(`${TEST_DIR}/file1.md`);
+    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(`${TEST_DIR}/file2.md`);
   });
 
   it("should exclude by pattern", async () => {
     const files = await scanTemplates(TEST_DIR, { exclude: "draft-*.md" });
 
-    expect(files).toHaveLength(3);
-    expect(files.map((f) => f.replace(/\\/g, "/"))).not.toContain(
-      `${TEST_DIR}/draft-file.md`
-    );
+    expect(files).toHaveLength(4);
+    expect(files.map((f) => f.replace(/\\/g, "/"))).not.toContain(`${TEST_DIR}/draft-file.md`);
   });
 
-  it("should combine include and exclude", async () => {
+  it("should combine only and exclude", async () => {
     const files = await scanTemplates(TEST_DIR, {
-      include: "*.md",
+      only: "*.md",
       exclude: "draft-*.md",
     });
 
     expect(files).toHaveLength(2);
-    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(
-      `${TEST_DIR}/file1.md`
-    );
-    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(
-      `${TEST_DIR}/file2.md`
-    );
+    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(`${TEST_DIR}/file1.md`);
+    expect(files.map((f) => f.replace(/\\/g, "/"))).toContain(`${TEST_DIR}/file2.md`);
   });
 });

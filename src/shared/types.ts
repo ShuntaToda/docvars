@@ -2,7 +2,7 @@ export interface CliOptions {
   input: string;
   output: string;
   vars: string;
-  include?: string;
+  only?: string;
   exclude?: string;
 }
 

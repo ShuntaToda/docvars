@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from "node:fs";
 import { parse } from "yaml";
-import { VariablesSchema, type Variables } from "../../domain/value-objects/variables.js";
+import { VariablesSchema, flattenVariables, type Variables } from "../../domain/value-objects/variables.js";
 import { VariablesFileNotFoundError, InvalidVariablesError } from "../../shared/errors.js";
 
 export function loadVariables(filePath: string): Variables {
@@ -16,5 +16,5 @@ export function loadVariables(filePath: string): Variables {
     throw new InvalidVariablesError(result.error.message);
   }
 
-  return result.data;
+  return flattenVariables(result.data);
 }

@@ -32,9 +32,7 @@ describe("processTemplates", () => {
 
     expect(result.processedFiles).toEqual(["test.md"]);
     expect(result.warnings).toEqual([]);
-    expect(readFileSync(join(OUTPUT_DIR, "test.md"), "utf-8")).toBe(
-      "Hello World!"
-    );
+    expect(readFileSync(join(OUTPUT_DIR, "test.md"), "utf-8")).toBe("Hello World!");
   });
 
   it("should warn about undefined variables", async () => {
@@ -47,12 +45,8 @@ describe("processTemplates", () => {
       vars: VARS_FILE,
     });
 
-    expect(result.warnings).toContain(
-      'Warning: undefined variable "{{id}}" in test.md'
-    );
-    expect(readFileSync(join(OUTPUT_DIR, "test.md"), "utf-8")).toBe(
-      "Hello World! ID: {{id}}"
-    );
+    expect(result.warnings).toContain('Warning: undefined variable "{{id}}" in test.md');
+    expect(readFileSync(join(OUTPUT_DIR, "test.md"), "utf-8")).toBe("Hello World! ID: {{id}}");
   });
 
   it("should throw SameInputOutputError when input equals output", async () => {
@@ -77,7 +71,7 @@ describe("processTemplates", () => {
     ).rejects.toThrow(VariablesFileNotFoundError);
   });
 
-  it("should filter files with include option", async () => {
+  it("should filter files with only option", async () => {
     writeFileSync(join(INPUT_DIR, "api-users.md"), "Users: {{users}}");
     writeFileSync(join(INPUT_DIR, "api-posts.md"), "Posts: {{posts}}");
     writeFileSync(join(INPUT_DIR, "readme.md"), "Readme");
@@ -87,7 +81,7 @@ describe("processTemplates", () => {
       input: INPUT_DIR,
       output: OUTPUT_DIR,
       vars: VARS_FILE,
-      include: "api-*.md",
+      only: "api-*.md",
     });
 
     expect(result.processedFiles).toHaveLength(2);

@@ -1,13 +1,13 @@
 {
-  "name": "md-template-vars",
+  "name": "docvars",
   "author": "Shunta Toda",
-  "version": "0.1.0",
-  "description": "Replace {{variables}} in markdown templates with YAML values",
+  "version": "0.4.8",
+  "description": "Replace {{variables}} in document templates with YAML values",
   "type": "module",
   "main": "./dist/application/use-cases/process-templates.js",
   "types": "./dist/application/use-cases/process-templates.d.ts",
   "bin": {
-    "md-template-vars": "./dist/presentation/cli/index.js"
+    "docvars": "dist/presentation/cli/index.js"
   },
   "files": [
     "dist"
@@ -20,28 +20,38 @@
     "prepublishOnly": "pnpm test run && pnpm build"
   },
   "keywords": [
-    "markdown",
     "template",
     "variables",
     "yaml",
-    "cli"
+    "cli",
+    "documents",
+    "markdown",
+    "html",
+    "text"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/ShuntaToda/docvars.git"
+  },
+  "homepage": "https://github.com/ShuntaToda/docvars#readme",
+  "bugs": {
+    "url": "https://github.com/ShuntaToda/docvars/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "dependencies": {
+    "chokidar": "^5.0.0",
     "citty": "^0.1.6",
+    "cli-table3": "^0.6.5",
     "fast-glob": "^3.3.2",
+    "picocolors": "^1.1.1",
     "yaml": "^2.3.4",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^24.10.9",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"
   }

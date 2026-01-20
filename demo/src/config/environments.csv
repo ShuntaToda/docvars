@@ -1,0 +1,4 @@
+Environment,API URL,Database Host,Database Port,Database Name,Redis Host,Redis Port,Rate Limit,Timeout
+{{environments.dev}},http://localhost:3000/{{api.version}},localhost,5432,{{app.name}}_dev,localhost,6379,10000,60
+{{environments.staging}},https://staging-api.example.com/{{api.version}},staging-{{db.host}},{{db.port}},{{app.name}}_staging,staging-{{redis.host}},{{redis.port}},{{api.rate_limit}},{{api.timeout}}
+{{environments.prod}},{{api.base_url}}/{{api.version}},{{db.host}},{{db.port}},{{db.name}},{{redis.host}},{{redis.port}},{{api.rate_limit}},{{api.timeout}}

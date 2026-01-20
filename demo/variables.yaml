@@ -1,0 +1,120 @@
+app:
+  name: ExampleApp
+  version: 2.1.0
+  description: A modern task management application for teams
+  tagline: Organize. Collaborate. Achieve.
+  license: MIT
+  repository: https://github.com/example/example
+organization:
+  name: Example Inc.
+  email: support@example.com
+  website: https://example.com
+api:
+  base_url: https://api.example.com
+  version: v1
+  rate_limit: 1000
+  timeout: 30
+redis:
+  host: redis.example.com
+  port: 6379
+authors:
+  lead:
+    name: John Smith
+    email: john@example.com
+    role: Lead Developer
+  backend:
+    name: Sarah Johnson
+    email: sarah@example.com
+    role: Backend Engineer
+  frontend:
+    name: Mike Chen
+    email: mike@example.com
+    role: Frontend Engineer
+features:
+  task_management: Task creation and management
+  collaboration: Team collaboration
+  notifications: Real-time notifications
+  priority: Priority and deadline tracking
+  tags: Tags and categories
+  attachments: File attachments
+  history: Activity history
+platforms:
+  web: Web
+  ios: iOS
+  android: Android
+  desktop: Desktop (Windows/macOS/Linux)
+environments:
+  dev: development
+  staging: staging
+  prod: production
+db:
+  host: db.example.com
+  port: 5432
+  name: example_production
+  max_connections: 100
+  tables:
+    users:
+      name: users
+      columns:
+        id: id
+        email: email
+        name: name
+        password_hash: password_hash
+        avatar_url: avatar_url
+        created_at: created_at
+        updated_at: updated_at
+    tasks:
+      name: tasks
+      columns:
+        id: id
+        title: title
+        description: description
+        user_id: user_id
+        team_id: team_id
+        assignee_id: assignee_id
+        status: status
+        priority: priority
+        due_date: due_date
+        tags: tags
+        created_at: created_at
+        updated_at: updated_at
+    teams:
+      name: teams
+      columns:
+        id: id
+        name: name
+        description: description
+        created_at: created_at
+        updated_at: updated_at
+    team_members:
+      name: team_members
+      columns:
+        user_id: user_id
+        team_id: team_id
+        role: role
+        joined_at: joined_at
+    task_attachments:
+      name: task_attachments
+      columns:
+        id: id
+        task_id: task_id
+        filename: filename
+        file_url: file_url
+        file_size: file_size
+        mime_type: mime_type
+        uploaded_by: uploaded_by
+        created_at: created_at
+    activity_log:
+      name: activity_log
+      columns:
+        id: id
+        entity_type: entity_type
+        entity_id: entity_id
+        action: action
+        user_id: user_id
+        changes: changes
+        created_at: created_at
+  backup:
+    retention_days: 30
+    full_backup_time: 02:00 UTC
+    incremental_interval: 6 hours

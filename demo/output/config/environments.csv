@@ -1,0 +1,4 @@
+Environment,API URL,Database Host,Database Port,Database Name,Redis Host,Redis Port,Rate Limit,Timeout
+development,http://localhost:3000/v1,localhost,5432,ExampleApp_dev,localhost,6379,10000,60
+staging,https://staging-api.example.com/v1,staging-db.example.com,5432,ExampleApp_staging,staging-redis.example.com,6379,1000,30
+production,https://api.example.com/v1,db.example.com,5432,example_production,redis.example.com,6379,1000,30
