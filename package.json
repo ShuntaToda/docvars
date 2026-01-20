@@ -39,7 +39,7 @@
     "url": "https://github.com/ShuntaToda/docvars/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "dependencies": {
     "chokidar": "^5.0.0",
@@ -51,7 +51,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^24.10.9",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"
   }
